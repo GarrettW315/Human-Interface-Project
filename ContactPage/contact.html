@@ -294,97 +294,135 @@
     </main>
 
     <script>
-        // EmailJS Configuration
-        const EMAILJS_CONFIG = {
-            serviceID: 'service_us9xvkf',
-            templateID: 'template_cb3m8no',
-            publicKey: '9KZ8BGXec2wJbrhud'
+    // EmailJS Configuration
+    const EMAILJS_CONFIG = {
+        serviceID: 'service_us9xvkf',
+        templateID: 'template_cb3m8no',
+        publicKey: '9KZ8BGXec2wJbrhud'
+    };
+
+    document.getElementById("contactForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        const form = event.target;
+        const button = form.querySelector("button[type='submit']");
+        button.disabled = true; 
+        button.textContent = "Sending...";
+
+        // Get form data
+        const formData = new FormData(form);
+        const data = {
+            from_name: formData.get('name'),
+            from_email: formData.get('email'),
+            phone: formData.get('phone') || 'Not provided',
+            message: formData.get('message'),
+            date: new Date().toLocaleString()
         };
 
-        document.getElementById("contactForm").addEventListener("submit", function(event) {
-            event.preventDefault();
+        console.log('Form data to send:', data);
+        sendWithEmailJS(data, button, form);
+    });
 
-            const form = event.target;
-            const button = form.querySelector("button[type='submit']");
-            button.disabled = true; 
-            button.textContent = "Sending...";
-
-            // Get form data - REMOVED to_email field
-            const formData = new FormData(form);
-            const data = {
-                from_name: formData.get('name'),
-                from_email: formData.get('email'),
-                phone: formData.get('phone'),
-                message: formData.get('message'),
-                date: new Date().toLocaleString()
-            };
-
-            sendWithEmailJS(data, button, form);
-        });
-
-        function sendWithEmailJS(data, button, form) {
+    function sendWithEmailJS(data, button, form) {
+        console.log('Starting EmailJS send process...');
+        
+        // Check if EmailJS is loaded
+        if (typeof emailjs === 'undefined') {
+            console.log('Loading EmailJS library...');
             // Load EmailJS library
             const script = document.createElement('script');
             script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js';
             script.onload = function() {
-                // Initialize EmailJS
-                (function() {
-                    emailjs.init(EMAILJS_CONFIG.publicKey);
-                })();
-
-                // Send email
-                emailjs.send(EMAILJS_CONFIG.serviceID, EMAILJS_CONFIG.templateID, data)
-                    .then(function(response) {
-                        console.log('Email sent successfully!', response.status, response.text);
-                        showSuccessPopup();
-                        form.reset();
-                    })
-                    .catch(function(error) {
-                        console.error('EmailJS error:', error);
-                        showErrorPopup();
-                    })
-                    .finally(() => {
-                        button.disabled = false;
-                        button.textContent = "Send Form";
-                    });
+                console.log('EmailJS library loaded successfully');
+                initializeAndSendEmail(data, button, form);
             };
             script.onerror = function() {
-                console.error('Failed to load EmailJS library');
+                console.error('FAILED to load EmailJS library');
                 showErrorPopup();
                 button.disabled = false;
                 button.textContent = "Send Form";
             };
             document.head.appendChild(script);
+        } else {
+            console.log('EmailJS already loaded');
+            initializeAndSendEmail(data, button, form);
         }
+    }
 
-        function showSuccessPopup() {
-            document.getElementById('successPopup').style.display = 'flex';
+    function initializeAndSendEmail(data, button, form) {
+        try {
+            console.log('Initializing EmailJS with public key:', EMAILJS_CONFIG.publicKey.substring(0, 10) + '...');
+            
+            // Initialize EmailJS
+            emailjs.init(EMAILJS_CONFIG.publicKey);
+            console.log('EmailJS initialized successfully');
+
+            console.log('Sending email with:');
+            console.log('- Service ID:', EMAILJS_CONFIG.serviceID);
+            console.log('- Template ID:', EMAILJS_CONFIG.templateID);
+            console.log('- Data:', data);
+
+            // Send email
+            emailjs.send(EMAILJS_CONFIG.serviceID, EMAILJS_CONFIG.templateID, data)
+                .then(function(response) {
+                    console.log('SUCCESS! Email sent successfully!');
+                    console.log('Response status:', response.status);
+                    console.log('Response text:', response.text);
+                    showSuccessPopup();
+                    form.reset();
+                })
+                .catch(function(error) {
+                    console.error('FAILED! EmailJS error:', error);
+                    console.error('Error details:', {
+                        serviceID: EMAILJS_CONFIG.serviceID,
+                        templateID: EMAILJS_CONFIG.templateID,
+                        publicKey: EMAILJS_CONFIG.publicKey.substring(0, 10) + '...',
+                        errorText: error.text
+                    });
+                    showErrorPopup();
+                })
+                .finally(() => {
+                    button.disabled = false;
+                    button.textContent = "Send Form";
+                });
+        } catch (error) {
+            console.error('Error in initializeAndSendEmail:', error);
+            showErrorPopup();
+            button.disabled = false;
+            button.textContent = "Send Form";
         }
+    }
 
-        function showErrorPopup() {
-            document.getElementById('errorPopup').style.display = 'flex';
-        }
+    function showSuccessPopup() {
+        console.log('Showing success popup');
+        document.getElementById('successPopup').style.display = 'flex';
+    }
 
-        // Close popups
-        document.getElementById('closeSuccessPopup').addEventListener('click', function() {
-            document.getElementById('successPopup').style.display = 'none';
-        });
+    function showErrorPopup() {
+        console.log('Showing error popup');
+        document.getElementById('errorPopup').style.display = 'flex';
+    }
 
-        document.getElementById('closeErrorPopup').addEventListener('click', function() {
-            document.getElementById('errorPopup').style.display = 'none';
-        });
+    // Close popups
+    document.getElementById('closeSuccessPopup').addEventListener('click', function() {
+        document.getElementById('successPopup').style.display = 'none';
+    });
 
-        // Close popups when clicking outside
-        document.getElementById('successPopup').addEventListener('click', function(e) {
-            if (e.target === this) this.style.display = 'none';
-        });
+    document.getElementById('closeErrorPopup').addEventListener('click', function() {
+        document.getElementById('errorPopup').style.display = 'none';
+    });
 
-        document.getElementById('errorPopup').addEventListener('click', function(e) {
-            if (e.target === this) this.style.display = 'none';
-        });
+    // Close popups when clicking outside
+    document.getElementById('successPopup').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+    });
 
-        document.addEventListener('contextmenu', event => event.preventDefault());
-    </script>
+    document.getElementById('errorPopup').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+    });
+
+    document.addEventListener('contextmenu', event => event.preventDefault());
+</script>
     <script src="contact.js"></script>
 </body>
 </html>
