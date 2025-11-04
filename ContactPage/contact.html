@@ -206,6 +206,44 @@
         .error-popup-btn:hover {
             background-color: rgb(230, 70, 10);
         }
+
+        /* More dropdown styles */
+        .more-contents {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 6em;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            min-width: 150px;
+        }
+
+        .more-contents .menu {
+            padding: 0.8em 1em;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .more-contents .menu:last-child {
+            border-bottom: none;
+        }
+
+        .more-contents .menu a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 400;
+            display: block;
+            transition: color 0.3s;
+        }
+
+        .more-contents .menu a:hover {
+            color: rgb(255, 84, 17);
+        }
+
+        .more-tab:hover .more-contents {
+            display: block;
+        }
         
         @media (max-width: 768px) {
             .form-row {
@@ -219,6 +257,10 @@
             
             .contact-title {
                 font-size: 2em;
+            }
+
+            .more-contents {
+                right: 1em;
             }
         }
     </style>
@@ -249,7 +291,15 @@
     <main>
         <div class="contact-container">
             <h1 class="contact-title">Contact Us</h1>
-            <form class="contact-form" id="contactForm">
+            
+            <!-- FormSubmit Form -->
+            <form class="contact-form" action="https://formsubmit.co/help.syntaxhub@gmail.com" method="POST">
+                <!-- FormSubmit Configuration -->
+                <input type="hidden" name="_subject" value="New Contact Form Submission - SyntaxHub">
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_next" value="https://yoursite.com/thank-you.html"> <!-- Optional: redirect after submit -->
+                
                 <div class="form-row">
                     <div class="form-group">
                         <label for="name">Name</label>
@@ -272,7 +322,7 @@
             </form>
         </div>
 
-        <!-- Success Popup -->
+        <!-- Success Popup (Optional - for better UX) -->
         <div class="success-popup" id="successPopup">
             <div class="success-popup-content">
                 <h3 class="success-popup-title">Message Sent Successfully!</h3>
@@ -281,148 +331,54 @@
             </div>
         </div>
 
-        <!-- Error Popup -->
-        <div class="error-popup" id="errorPopup">
-            <div class="error-popup-content">
-                <h3 class="error-popup-title">Whoops! That wasn't supposed to happen.</h3>
-                <p class="error-popup-message">There was a problem sending your message, please try again.</p>
-                <button class="error-popup-btn" id="closeErrorPopup">Try Again</button>
-            </div>
-        </div>
-
         <i class="fa-solid fa-universal-access"></i>
     </main>
 
     <script>
-    // EmailJS Configuration
-    const EMAILJS_CONFIG = {
-        serviceID: 'service_us9xvkf',
-        templateID: 'template_cb3m8no',
-        publicKey: '9KZ8BGXec2wJbrhud'
-    };
-
-    document.getElementById("contactForm").addEventListener("submit", function(event) {
-        event.preventDefault();
-
-        const form = event.target;
-        const button = form.querySelector("button[type='submit']");
-        button.disabled = true; 
-        button.textContent = "Sending...";
-
-        // Get form data
-        const formData = new FormData(form);
-        const data = {
-            from_name: formData.get('name'),
-            from_email: formData.get('email'),
-            phone: formData.get('phone') || 'Not provided',
-            message: formData.get('message'),
-            date: new Date().toLocaleString()
-        };
-
-        console.log('Form data to send:', data);
-        sendWithEmailJS(data, button, form);
-    });
-
-    function sendWithEmailJS(data, button, form) {
-        console.log('Starting EmailJS send process...');
-        
-        // Check if EmailJS is loaded
-        if (typeof emailjs === 'undefined') {
-            console.log('Loading EmailJS library...');
-            // Load EmailJS library
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js';
-            script.onload = function() {
-                console.log('EmailJS library loaded successfully');
-                initializeAndSendEmail(data, button, form);
-            };
-            script.onerror = function() {
-                console.error('FAILED to load EmailJS library');
-                showErrorPopup();
+        // Enhanced form handling with FormSubmit
+        document.getElementById("contactForm").addEventListener("submit", function(event) {
+            const form = event.target;
+            const button = form.querySelector("button[type='submit']");
+            
+            // Show loading state
+            button.disabled = true;
+            button.textContent = "Sending...";
+            
+            // FormSubmit will handle the actual submission
+            // The form will redirect to FormSubmit's success page
+            
+            // Optional: You can show success popup instead of redirect
+            // Uncomment below if you want to handle success locally
+            
+            /*
+            event.preventDefault();
+            
+            // Simulate form submission (remove this in production)
+            setTimeout(() => {
+                showSuccessPopup();
+                form.reset();
                 button.disabled = false;
                 button.textContent = "Send Form";
-            };
-            document.head.appendChild(script);
-        } else {
-            console.log('EmailJS already loaded');
-            initializeAndSendEmail(data, button, form);
+            }, 1500);
+            */
+        });
+
+        // Success popup functions (optional)
+        function showSuccessPopup() {
+            document.getElementById('successPopup').style.display = 'flex';
         }
-    }
 
-    function initializeAndSendEmail(data, button, form) {
-        try {
-            console.log('Initializing EmailJS with public key:', EMAILJS_CONFIG.publicKey.substring(0, 10) + '...');
-            
-            // Initialize EmailJS
-            emailjs.init(EMAILJS_CONFIG.publicKey);
-            console.log('EmailJS initialized successfully');
+        document.getElementById('closeSuccessPopup').addEventListener('click', function() {
+            document.getElementById('successPopup').style.display = 'none';
+        });
 
-            console.log('Sending email with:');
-            console.log('- Service ID:', EMAILJS_CONFIG.serviceID);
-            console.log('- Template ID:', EMAILJS_CONFIG.templateID);
-            console.log('- Data:', data);
+        document.getElementById('successPopup').addEventListener('click', function(e) {
+            if (e.target === this) this.style.display = 'none';
+        });
 
-            // Send email
-            emailjs.send(EMAILJS_CONFIG.serviceID, EMAILJS_CONFIG.templateID, data)
-                .then(function(response) {
-                    console.log('SUCCESS! Email sent successfully!');
-                    console.log('Response status:', response.status);
-                    console.log('Response text:', response.text);
-                    showSuccessPopup();
-                    form.reset();
-                })
-                .catch(function(error) {
-                    console.error('FAILED! EmailJS error:', error);
-                    console.error('Error details:', {
-                        serviceID: EMAILJS_CONFIG.serviceID,
-                        templateID: EMAILJS_CONFIG.templateID,
-                        publicKey: EMAILJS_CONFIG.publicKey.substring(0, 10) + '...',
-                        errorText: error.text
-                    });
-                    showErrorPopup();
-                })
-                .finally(() => {
-                    button.disabled = false;
-                    button.textContent = "Send Form";
-                });
-        } catch (error) {
-            console.error('Error in initializeAndSendEmail:', error);
-            showErrorPopup();
-            button.disabled = false;
-            button.textContent = "Send Form";
-        }
-    }
+        document.addEventListener('contextmenu', event => event.preventDefault());
+    </script>
 
-    function showSuccessPopup() {
-        console.log('Showing success popup');
-        document.getElementById('successPopup').style.display = 'flex';
-    }
-
-    function showErrorPopup() {
-        console.log('Showing error popup');
-        document.getElementById('errorPopup').style.display = 'flex';
-    }
-
-    // Close popups
-    document.getElementById('closeSuccessPopup').addEventListener('click', function() {
-        document.getElementById('successPopup').style.display = 'none';
-    });
-
-    document.getElementById('closeErrorPopup').addEventListener('click', function() {
-        document.getElementById('errorPopup').style.display = 'none';
-    });
-
-    // Close popups when clicking outside
-    document.getElementById('successPopup').addEventListener('click', function(e) {
-        if (e.target === this) this.style.display = 'none';
-    });
-
-    document.getElementById('errorPopup').addEventListener('click', function(e) {
-        if (e.target === this) this.style.display = 'none';
-    });
-
-    document.addEventListener('contextmenu', event => event.preventDefault());
-</script>
     <script src="contact.js"></script>
 </body>
 </html>
