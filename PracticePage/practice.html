@@ -37,21 +37,78 @@
     </header>
     
     <main>
-        
+        <!-- Description of Practice Page in center -->
+        <div class="practice-description">
+            <h1>Time to Practice!</h1>
+            <p>Select the type of questions you'd like the quiz to ask!</p>
+        </div>
+
+        <!-- Three dropdown menus-->
+        <div class="dropdowns">
+            <div class="dropdown">
+            <h3>&#10067;</h3>
+            <fieldset id="question-type-fieldset" class="checkbox-group">
+                <legend>Question Type</legend>
+                <label><input type="checkbox" name="question-type" value="multiple-choice"> Multiple Choice</label>
+                <label><input type="checkbox" name="question-type" value="true-false"> True/False</label>
+                <label><input type="checkbox" name="question-type" value="fill-in-the-blank"> Fill in the Blank</label>
+                <label><input type="checkbox" name="question-type" value="matching"> Matching</label>
+            </fieldset>
+            </div>
+
+            <div class="dropdown">
+            <h3>&#9989;</h3>
+            <fieldset id="answer-with-fieldset" class="radio-group">
+                <legend>Answer With</legend>
+                <label><input type="radio" name="answer-with" value="definition"> Definition</label>
+                <label><input type="radio" name="answer-with" value="term"> Term</label>
+                <label><input type="radio" name="answer-with" value="random"> Random</label>
+            </fieldset>
+            </div>
+
+            <div class="dropdown">
+            <h3>&#x270E</h3>
+            <fieldset id="number-of-questions-fieldset" class="radio-group">
+                <legend>Number of Questions</legend>
+                <label><input type="radio" name="number-of-questions" value="5"> 5</label>
+                <label><input type="radio" name="number-of-questions" value="10"> 10</label>
+                <label><input type="radio" name="number-of-questions" value="15"> 15</label>
+                <label>
+                    <input type="radio" name="number-of-questions" value="custom" id="number-custom">
+                    <input type="number" id="custom-number-input" name="custom-number" min="1" max="100" disabled>
+                </label>
+
+                <script>
+                    (function(){
+                        const radios = document.querySelectorAll('input[name="number-of-questions"]');
+                        const customInput = document.getElementById('custom-number-input');
+                        function update() {
+                            customInput.disabled = true;
+                            const customRadio = document.getElementById('number-custom');
+                            if (customRadio && customRadio.checked) {
+                                customInput.disabled = false;
+                                customInput.focus();
+                            }
+                        }
+                        radios.forEach(r => r.addEventListener('change', update));
+                        update();
+                    })();
+                </script>
+
+            </fieldset>
+            </div>
+
+        </div>
+
+        <!-- Start Practice Button -->
+        <div class="continue-btn">
+            <button id="continue-btn">Start Quiz!</button>
+        </div>
 
 
 
         <i class="fa-solid fa-universal-access"></i>
     </main>
-
-
-
-
-
-
-
-
-
 
     <script src="practice.js"></script>
 </body>
