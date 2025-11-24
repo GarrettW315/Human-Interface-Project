@@ -250,11 +250,11 @@
         <div class="contact-container">
             <h1 class="contact-title">Contact Us</h1>
             
-           <form class="contact-form" id="contactForm" name="contact" method="POST" netlify data-netlify="true" netlify-honeypot="bot-field">
-    <input type="hidden" name="form-name" value="contact">
-    <p style="display: none;">
-        <label>Don't fill this out if you're human: <input name="bot-field" /></label>
-    </p>
+           <form class="contact-form" id="contactForm" action="https://formsubmit.co/help.syntaxhub@gmail.com" method="POST">
+    <!-- FormSubmit Configuration -->
+    <input type="hidden" name="_subject" value="New Contact Form Submission - SyntaxHub">
+    <input type="hidden" name="_template" value="table">
+    <input type="hidden" name="_captcha" value="false">
     
     <div class="form-row">
         <div class="form-group">
@@ -300,77 +300,74 @@
     </main>
 
     <script>
-
-        console.log('Form submission started');
-        console.log('Form action:', form.action);
-        console.log('Form method:', form.method);
+// Formspark handling with custom popup
         document.getElementById("contactForm").addEventListener("submit", function(event) {
-        event.preventDefault(); 
+            event.preventDefault();
     
-    const form = event.target;
-    const button = form.querySelector("button[type='submit']");
-    const formData = new FormData(form);
+        const form = event.target;
+        const button = form.querySelector("button[type='submit']");
+        const formData = new FormData(form);
     
-    // Show loading state
-    button.disabled = true;
-    button.textContent = "Sending...";
+        // Show loading state
+        button.disabled = true;
+        button.textContent = "Sending...";
     
-    
-    fetch("/", {
-        method: "POST",
-        body: new URLSearchParams(new FormData(form)),
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
-    })
-    .then(response => {
-        if (response.ok) {
-            // Success - show your custom popup
-            showSuccessPopup();
-            form.reset();
-        } else {
-            // Error - show error popup
+        // Submit to Formspark
+        fetch(form.action, {
+            method: "POST",
+            body: formData,
+            headers: {
+                "Accept": "application/json"
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                // Success - show your custom popup
+                showSuccessPopup();
+                form.reset();
+            } else {
+                // Error - show error popup
+                showErrorPopup();
+            }
+        })
+        .catch(error => {
+            console.error('Form submission error:', error);
             showErrorPopup();
-        }
-    })
-    .catch(error => {
-        console.error('Form submission error:', error);
-        showErrorPopup();
-    })
-    .finally(() => {
-        // Reset button state
-        button.disabled = false;
-        button.textContent = "Send Form";
+        })
+        .finally(() => {
+            // Reset button state
+            button.disabled = false;
+            button.textContent = "Send Form";
+        });
     });
-});
-        // Success popup functions
-        function showSuccessPopup() {
-            document.getElementById('successPopup').style.display = 'flex';
-        }
 
-        function showErrorPopup() {
-            document.getElementById('errorPopup').style.display = 'flex';
-        }
 
-        // Close popups
-        document.getElementById('closeSuccessPopup').addEventListener('click', function() {
-            document.getElementById('successPopup').style.display = 'none';
-        });
+    function showSuccessPopup() {
+        document.getElementById('successPopup').style.display = 'flex';
+    }
 
-        document.getElementById('closeErrorPopup').addEventListener('click', function() {
-            document.getElementById('errorPopup').style.display = 'none';
-        });
+    function showErrorPopup() {
+        document.getElementById('errorPopup').style.display = 'flex';
+    }
 
-        // Close popups when clicking outside
-        document.getElementById('successPopup').addEventListener('click', function(e) {
-            if (e.target === this) this.style.display = 'none';
-        });
 
-        document.getElementById('errorPopup').addEventListener('click', function(e) {
-            if (e.target === this) this.style.display = 'none';
-        });
+    document.getElementById('closeSuccessPopup').addEventListener('click', function() {
+        document.getElementById('successPopup').style.display = 'none';
+    });
 
-        
+    document.getElementById('closeErrorPopup').addEventListener('click', function() {
+        document.getElementById('errorPopup').style.display = 'none';
+    });
+
+    document.getElementById('successPopup').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+    });
+
+    document.getElementById('errorPopup').addEventListener('click', function(e) {
+        if (e.target === this) this.style.display = 'none';
+    });
+
+    document.addEventListener('contextmenu', event => event.preventDefault());
     </script>
     <script src="contact.js"></script>
 
