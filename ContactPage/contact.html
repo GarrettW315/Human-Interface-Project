@@ -250,7 +250,7 @@
         <div class="contact-container">
             <h1 class="contact-title">Contact Us</h1>
             
-            <form class="contact-form" id="contactForm" name="contact" method="POST" netlify data-netlify="true" netlify-honeypot="bot-field">
+           <form class="contact-form" id="contactForm" name="contact" method="POST" netlify data-netlify="true" netlify-honeypot="bot-field">
     <input type="hidden" name="form-name" value="contact">
     <p style="display: none;">
         <label>Don't fill this out if you're human: <input name="bot-field" /></label>
@@ -300,16 +300,42 @@
     </main>
 
     <script>
-       // Netlify Forms handling
+        // Netlify Forms handling with custom popup
 document.getElementById("contactForm").addEventListener("submit", function(event) {
+    event.preventDefault(); // Keep this to prevent default submission
+    
     const form = event.target;
     const button = form.querySelector("button[type='submit']");
+    const formData = new FormData(form);
     
     // Show loading state
     button.disabled = true;
     button.textContent = "Sending...";
     
-    
+    // Submit to Netlify
+    fetch("/", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => {
+        if (response.ok) {
+            // Success - show your custom popup
+            showSuccessPopup();
+            form.reset();
+        } else {
+            // Error - show error popup
+            showErrorPopup();
+        }
+    })
+    .catch(error => {
+        // Network error
+        showErrorPopup();
+    })
+    .finally(() => {
+        // Reset button state
+        button.disabled = false;
+        button.textContent = "Send Form";
+    });
 });
 
         // Success popup functions
