@@ -300,9 +300,12 @@
     </main>
 
     <script>
-        // Netlify Forms handling with custom popup
-document.getElementById("contactForm").addEventListener("submit", function(event) {
-    event.preventDefault(); // Keep this to prevent default submission
+
+        console.log('Form submission started');
+        console.log('Form action:', form.action);
+        console.log('Form method:', form.method);
+        document.getElementById("contactForm").addEventListener("submit", function(event) {
+        event.preventDefault(); 
     
     const form = event.target;
     const button = form.querySelector("button[type='submit']");
@@ -312,10 +315,13 @@ document.getElementById("contactForm").addEventListener("submit", function(event
     button.disabled = true;
     button.textContent = "Sending...";
     
-    // Submit to Netlify
+    
     fetch("/", {
         method: "POST",
-        body: formData
+        body: new URLSearchParams(new FormData(form)),
+        headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
     })
     .then(response => {
         if (response.ok) {
@@ -328,7 +334,7 @@ document.getElementById("contactForm").addEventListener("submit", function(event
         }
     })
     .catch(error => {
-        // Network error
+        console.error('Form submission error:', error);
         showErrorPopup();
     })
     .finally(() => {
@@ -337,7 +343,6 @@ document.getElementById("contactForm").addEventListener("submit", function(event
         button.textContent = "Send Form";
     });
 });
-
         // Success popup functions
         function showSuccessPopup() {
             document.getElementById('successPopup').style.display = 'flex';
