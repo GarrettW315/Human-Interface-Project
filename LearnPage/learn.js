@@ -18,7 +18,7 @@ moreContent.addEventListener('mouseleave', () => {
 });
 
 // Learn js
-document.getElementById('start-learning-btn').addEventListener("click", () => {
+document.getElementById('continue-btn').addEventListener("click", () => {
   let subject = document.querySelector('input[name="subject"]:checked');
   let importance = document.querySelector('input[name="importance"]:checked');
   let difficulty = document.querySelector('input[name="difficulty"]:checked');
