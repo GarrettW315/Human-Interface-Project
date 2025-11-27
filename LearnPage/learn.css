@@ -145,7 +145,7 @@ main{
   align-items: center;
 }
 
-.continue-btn button{
+.continue-btn{
     display: inline-block;
     position: absolute;
     justify-content: center;
@@ -172,7 +172,7 @@ main{
     font-weight: 500;
 }
 
-.continue-btn button:hover{
+.continue-btn:hover{
     background-color: #c8dde3;
 }
 /* More Drop down Styles */
